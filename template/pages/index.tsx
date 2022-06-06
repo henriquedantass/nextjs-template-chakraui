@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { Text } from "@chakra-ui/react";
 
 const Home: NextPage = () => {
-  return <Text>hello world</Text>;
+  return <Text>hello $NAME</Text>;
 };
 
 export default Home;
