@@ -1,11 +1,8 @@
 #!/bin/bash
 
-. clone_template.sh
-
-
-if [[ "$(docker images -q gh-container:latest 2> /dev/null)" == "" ]]; then
-  docker build -t gh-container -f .d3-lib/dockerfiles/GH-Dockerfile .
-  docker build -t gh-login -f .d3-lib/dockerfiles/LoginGh-Dockerfile .
+if [[ "$(docker images -q gh-repo:latest 2> /dev/null)" == "" ]]; then
+  docker build -t gh-container -f dockerfiles/GH-Dockerfile .
+  docker build -t gh-repo -f dockerfiles/CreateRepo-Dockerfile .
 fi
 
 checkAuthStatus () {
@@ -14,19 +11,17 @@ checkAuthStatus () {
   (docker run --rm -it -v ${HOME}:/root gh-container "auth" "status") > /dev/null 2>&1 && authStatus=0
 
   if [ $authStatus == 0 ]; then
-    echo "Você está autenticado!" && return 0
+    echo "Você está autenticado!"
+    createRepo
   else 
     echo "É necessário autenticar" 
-    docker run --rm -it -v ${HOME}:/root gh-login
+    docker run --rm -it -v ${HOME}:/root gh-container
   fi
 }
 
-
-
 createRepo () {
     echo "criando repositório"
-
-    clone_template.sh
+    docker run --rm -it -v ${HOME}:/root gh-repo "bash" "create_repo.sh"
 }
 
 
